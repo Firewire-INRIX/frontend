@@ -73,6 +73,7 @@ main{
     height: 92vh;
     width: 50%;
     padding-left: 0.3rem;
+    text-wrap: pretty;
 }
 
 #resizer {
