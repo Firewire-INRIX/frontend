@@ -1,6 +1,6 @@
 
 :root{
-    --color-beige: rgba(235,228,213,255);
+    --color-beige: lightgrey;
     --color-red: rgba(177,0,80,255);
     --color-darkgrey: rgba(39,40,49,255);
     --color-orange: rgba(252,116,0,255);
@@ -27,6 +27,7 @@
 button{
     background-color: white;
     padding: 0.1rem;
+    border-radius: 10%;
 }
 
 button:hover{
@@ -50,16 +51,17 @@ nav{
     text-decoration: underline;
     text-decoration-color: var(--color-orange);
     color: white;
+    padding-bottom: 0.5rem;
 }
 
+#header:hover{
+    color: var(--color-orange);
+}
 
 #bar{
     background-color: var(--color-orange);
     padding-top: 0.5rem;
 }
-
-
-
 
 main{
     display: flex;
@@ -71,6 +73,13 @@ main{
     height: 92vh;
     width: 50%;
     padding-left: 0.3rem;
+}
+
+#resizer {
+    width: 0.5rem;
+    background-color: var(--color-orange);
+    cursor: ew-resize;
+    position: relative;
 }
 
 .map-display{
