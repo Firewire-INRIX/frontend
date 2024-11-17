@@ -26,3 +26,39 @@ mapButton.addEventListener('click', function() {
     }
 
 });
+
+const resizer = document.getElementById('resizer');
+const info = document.querySelector('.info-display');
+const map = document.querySelector('.map-display');
+let isDragging = false;
+
+// Mouse down event: Start dragging
+resizer.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    document.body.style.cursor = 'ew-resize'; // Change cursor
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+});
+
+// Mouse move event: Resize panels
+function onMouseMove(e) {
+    if (!isDragging) return;
+
+    // Calculate new width for .info-display
+    const containerWidth = document.querySelector('main').offsetWidth;
+    const newInfoWidth = (e.clientX / containerWidth) * 100; // Convert to percentage
+
+    // Apply new widths & constraints
+    if (newInfoWidth > 10 && newInfoWidth < 90) {
+        info.style.width = `${newInfoWidth}%`;
+        map.style.width = `${100 - newInfoWidth}%`;
+    }
+}
+
+// Mouse up event: Stop dragging
+function onMouseUp() {
+    isDragging = false;
+    document.body.style.cursor = 'default'; // Reset cursor
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+}
