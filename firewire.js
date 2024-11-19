@@ -1,3 +1,39 @@
+// Initialize the map
+const map = new maplibregl.Map({
+    container: 'map',
+    style: 'https://maps.geo.us-west-2.amazonaws.com/maps/v0/maps/FireMap/style-descriptor?key=NICETRY',
+    center: [-121.9366, 37.3489], // Default center (longitude, latitude)
+    zoom: 13
+});
+
+// manage active location points / map markers
+let serviceLocations = [];
+let markers = [];
+
+export function addLocation(name, lat, lon) {
+    let loc = {name: name, latitude: lat, longitude: lon};
+    serviceLocations.push(loc);
+}
+
+export function setAllLocations() {
+    // remove all previous markers from the map
+    markers.forEach(marker => {
+        marker.remove();
+    })
+    markers = [];
+
+    // iterate through all locations from this GET request and add them to the map
+    serviceLocations.forEach(location => {
+        const marker = new maplibregl.Marker()
+            .setLngLat([location.longitude, location.latitude])
+            .setPopup(new maplibregl.Popup({offset: 25}).setHTML(`<h3>${location.name}</h3>`))
+            .addTo(map);
+        markers.push(marker);
+    });
+
+    serviceLocations = [];
+}
+
 //get the mapButton
 const mapButton = document.getElementById('map-button');
 let counter = 0;
@@ -6,10 +42,10 @@ let counter = 0;
 mapButton.addEventListener('click', function() {
     const info = document.querySelector('.info-display');
     const map = document.querySelector('.map-display');
-    
+
     counter++;
     const sizeSetting = (counter % 3)+1; // Add 1 to shift results to 1, 2, 3
-    
+
     //depending on sizeSetting, shift size of info and map displays
     if(sizeSetting ===1){
         map.style.width = '50%';
@@ -27,38 +63,21 @@ mapButton.addEventListener('click', function() {
 
 });
 
-const resizer = document.getElementById('resizer');
-const info = document.querySelector('.info-display');
-const map = document.querySelector('.map-display');
-let isDragging = false;
+var response_data;
+async function submitSearch() {
+            const query = document.getElementById('search').value;
 
-// Mouse down event: Start dragging
-resizer.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    document.body.style.cursor = 'ew-resize'; // Change cursor
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
-});
+            const response = await fetch('/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ query })
+            });
 
-// Mouse move event: Resize panels
-function onMouseMove(e) {
-    if (!isDragging) return;
-
-    // Calculate new width for .info-display
-    const containerWidth = document.querySelector('main').offsetWidth;
-    const newInfoWidth = (e.clientX / containerWidth) * 100; // Convert to percentage
-
-    // Apply new widths & constraints
-    if (newInfoWidth > 10 && newInfoWidth < 90) {
-        info.style.width = `${newInfoWidth}%`;
-        map.style.width = `${100 - newInfoWidth}%`;
-    }
-}
-
-// Mouse up event: Stop dragging
-function onMouseUp() {
-    isDragging = false;
-    document.body.style.cursor = 'default'; // Reset cursor
-    document.removeEventListener('mousemove', onMouseMove);
-    document.removeEventListener('mouseup', onMouseUp);
-}
+            const data = await response.json();
+            response_data = data;
+            const responseElement = document.getElementById('response');
+            responseElement.classList.remove('hidden');
+            responseElement.innerHTML = `<strong>Search Result:</strong> ${JSON.stringify(data)}`;
+        }
